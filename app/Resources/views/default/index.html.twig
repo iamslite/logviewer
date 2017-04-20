@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+{{ project.currentHost }} Logs
+{% endblock %}
+
+{% block body %}
+<h1>{{ project.currentHost }}</h2>
+
+<p>This project is a {{ project.apptype }} type.</p>
+
+<p>Master URL: {{ project.domainname }}</p>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head
+    <body>
+        {% block header %}
+        <div class="header">
+          <div class="site">
+            {% if (project is defined) %}
+            {{ project.currentHost }} Logs
+            {% else %}
+            Log viewer
+            {% endif %}
+          </div>
+          {% block nav %}
+          <ul class="nav">
+            {% if (project is defined) %}
+            <li><a href="{{ url('access_index') }}">HTTP Access Logs</a></li>
+            <li><a href="{{ url('error_index') }}">HTTP Error Logs</a></li>
+
+            <li><a href="{{ url('php_index') }}">PHP Logs</a></li>
+            
+            {% if project.apptype == 'magento' or project.apptype == 'magento2' %}
+            <li><a href="{{ url('magento_index') }}">Magento Logs</a></li>
+            <li><a href="{{ url('report_index') }}">Magento Reports</a></li>
+            {% endif %}
+            {% endif %}
+
+            {% if not is_granted('IS_AUTHENTICATED_ANONYMOUSLY') %}
+            <li><a href="{{ url('logout') }}">Logout</a></li>
+            {% endif %}
+          </ul>
+          {% endblock nav %}
+
+        </div>
+        {% endblock header %}
+
+        {% for flash_message in app.session.flashbag.get('error') %}
+        <div class="flash-error">
+          {{ flash_message }}
+        </div>
+        {% endfor %}
+
+        {% for flash_message in app.session.flashbag.get('notice') %}
+        <div class="flash-notice">
+          {{ flash_message }}
+        </div>
+        {% endfor %}
+
+        <div class="body">
+        {% block body %}{% endblock %}
+        </div>
+
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

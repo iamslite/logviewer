@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+{% if (log) %}
+PHP log: {{ log.filename }}
+{% else %}
+PHP logs
+{% endif %}
+{% endblock %}
+
+{% if route_defaults is not defined %}
+{% if (log) %}
+{% set route_defaults = { 'logid': log.filename } %}
+{% else %}
+{% set route_defaults = { } %}
+{% endif %}
+{% endif %}
+
+{% block body %}
+
+{% block form %}
+{% if (form is defined) %}
+<div class="form">
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block choices %}
+{% if (logs is defined and logs|length > 1) %}
+<div class="choices">
+  {% for log in logs %}
+  <div class="choice"><a href="{{ url(route, {'logid': log.filename|replace({'/' : ':'}) }) }}">{{log.filename}}</a></div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% if (log) %}
+<div class="log">
+<h2>{{ log.filename }}</h2>
+
+<p>
+{% if (lineCount is defined and firstLine is defined) %}
+Showing {% if (lineCount == 0) %}all the{% elseif (lineCount < 0) %}{{ 0 - lineCount }}{% else %}{{ lineCount }}{% endif %} lines from {% if (firstLine == 0) %}the start{% elseif (firstLine < 0) %}{{ 0 - firstLine}} lines before the end{% else %}line {{ firstLine }}{% endif %}. 
+{% endif %}
+There are {{ log.numLines }} lines in the file.</p>
+</p>
+
+{% block filenav %}
+<div class="filenav">
+<p>Show:</p>
+
+<ul>
+<li><a href="{{ url(route, { 'firstline': 0, 'linecount': 0 } | merge (route_defaults) ) }}" class="all">All</a></li>
+<li><a href="{{ url(route, { 'firstline': 0, 'linecount': step } | merge (route_defaults) ) }}" class="start">Start</a></li>
+{% if (firstLine > step) %}
+<li><a href="{{ url(route, { 'firstline': firstLine - step, 'linecount': step } | merge (route_defaults) ) }}" class="previous">Previous {{ step }}</a></li>
+{% elseif (firstLine < 0 and log.numLines > ( 0 - firstLine + step )) %}
+<li><a href="{{ url(route, { 'firstline': firstLine - step, 'linecount': step } | merge (route_defaults) ) }}" class="previous">Previous {{ step }}</a></li>
+{% elseif (firstLine != 0) %}
+<li><a href="{{ url(route, { 'firstline': 0, 'linecount': step } | merge (route_defaults) ) }}" class="previous">First {{ step }}</a></li>
+{% endif %}
+
+{% if (firstLine == 0 and lineCount == 0) %}
+{# Do nothing #}
+{% elseif (log.numLines - firstLine > step) %}
+<li><a href="{{ url(route, { 'firstline': firstLine + step, 'linecount': step } | merge (route_defaults) ) }}" class="previous">Next {{ step }}</a></li>
+{% elseif (firstLine < 0 and log.numLines > ( 0 - firstLine - step )) %}
+<li><a href="{{ url(route, { 'firstline': firstLine + step, 'linecount': step } | merge (route_defaults) ) }}" class="previous">Next {{ step }}</a></li>
+{% else %}
+<li><a href="{{ url(route, { 'firstline': -step, 'linecount': step } | merge (route_defaults) ) }}" class="previous">Last {{ step }}</a></li>
+{% endif %}
+
+<li><a href="{{ url(route, { 'firstline': -step, 'linecount': step } | merge (route_defaults) ) }}" class="start">End</a></li>
+</ul>
+</div>
+{% endblock %}
+
+{% if (firstLine is not defined) %}{% set firstLine=0 %}{% endif %}
+{% if (lineCount is not defined) %}{% set lineCount=0 %}{% endif %}
+
+{% block filecontent %}
+<div class="filecontent">
+<pre>
+{{ log.contents(firstLine, lineCount)|join("\n") }}
+</pre>
+</div>
+{% endblock %}
+
+</div>
+{% endif %}
+{% endblock %}

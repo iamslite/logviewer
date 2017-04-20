@@ -1,0 +1,9 @@
+{% extends 'log/log.html.twig' %}
+
+{% block title %}
+{% if (log) %}
+PHP log: {{ log.filename }}
+{% else %}
+PHP logs
+{% endif %}
+{% endblock %}

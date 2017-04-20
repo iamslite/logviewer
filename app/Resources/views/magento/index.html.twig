@@ -1,0 +1,9 @@
+{% extends 'log/log.html.twig' %}
+
+{% block title %}
+{% if (logs|length > 1 or log is empty) %}
+Magento logs
+{% else %}
+Magento log: {{ log.filename }}
+{% endif %}
+{% endblock %}
