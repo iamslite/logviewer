@@ -6,7 +6,7 @@
 
 namespace AppBundle\Model;
 
-class Project 
+abstract class Project implements ProjectInterface
 {
     /**
      * @var String Location of the project.
@@ -22,13 +22,18 @@ class Project
         $this->project_root = $project_root;
     }
 
-    abstract public function loadData() 
+    abstract protected function loadData() 
     {
     }
 
     public function getCurrentHost()
     {
         return $_SERVER['SERVER_NAME'];
+    }
+
+    public function getValue($name)
+    {
+        return $this->$name;
     }
 
     public function __isset($name)
@@ -42,5 +47,9 @@ class Project
     public function getProjectRoot()
     {
         return $this->project_root;
+    }
+
+    public static function canConfigure($projectRoot) {
+        return false;
     }
 }
