@@ -188,4 +188,14 @@ class ProjectIni extends Project
     {
         return $this->project_root;
     }
+
+    public function canConfigure($projectRoot) {
+        $ini_path = $projectRoot . '/docker/config.ini';
+
+        if (file_exists($ini_path)) {
+           return true;
+        }
+        // else
+        return false;
+    }
 }

@@ -192,4 +192,14 @@ class ProjectSiteconfig extends Project
             $target = $source;
         }
     }
+
+    public function canConfigure($projectRoot) {
+        $config_path = $projectRoot . '/.siteconfig.yml';
+
+        if (file_exists($config_path)) {
+           return true;
+        }
+        // else
+        return false;
+    }
 }
